@@ -2,7 +2,7 @@
 
 ## Phase 1: Project Scaffolding & Automation
 - [x] Task: Initialize Flutter Desktop project for Mac and Windows. [d59edcf]
-- [ ] Task: Create `Makefile` with `setup`, `build`, and `test` commands.
+- [x] Task: Create `Makefile` with `setup`, `build`, and `test` commands. [b0b2cdf]
 - [ ] Task: Configure `analysis_options.yaml` with strict linting rules.
 - [ ] Task: Implement basic navigation and window setup.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Scaffolding' (Protocol in workflow.md)
