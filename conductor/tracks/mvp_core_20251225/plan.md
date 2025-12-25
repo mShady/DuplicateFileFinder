@@ -1,7 +1,7 @@
 # Plan: MVP - Core Scanning, Visualization, and Safe Deletion
 
 ## Phase 1: Project Scaffolding & Automation
-- [ ] Task: Initialize Flutter Desktop project for Mac and Windows.
+- [~] Task: Initialize Flutter Desktop project for Mac and Windows.
 - [ ] Task: Create `Makefile` with `setup`, `build`, and `test` commands.
 - [ ] Task: Configure `analysis_options.yaml` with strict linting rules.
 - [ ] Task: Implement basic navigation and window setup.
