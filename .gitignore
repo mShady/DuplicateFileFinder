@@ -1,6 +1,68 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
 .DS_Store
-build/
+.atom/
+.buildlog/
+.history
+.svn/
+.direnv/
+.env
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configurations and tasks for VS Code
+# This is often shared across developers.
+# .vscode/
+
+# Flutter/Dart related
+**/doc/api/
+**/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
 .packages
-pubspec.lock
+.pub-cache/
+.pub/
+/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will create this file for Java applications
+/android/key.properties
+/android/app/src/main/res/raw/google_services.json
+/android/app/google-services.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Trashes
+.Spotlight-V100
+.DocumentRevisions-V100
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Conductor local state
 conductor/setup_state.json
