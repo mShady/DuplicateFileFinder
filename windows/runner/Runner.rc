@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "duplicate_file_finder" "\0"
+            VALUE "FileDescription", "Duplicate File Finder" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "duplicate_file_finder" "\0"
+            VALUE "InternalName", "Duplicate File Finder" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "duplicate_file_finder.exe" "\0"
-            VALUE "ProductName", "duplicate_file_finder" "\0"
+            VALUE "ProductName", "Duplicate File Finder" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
