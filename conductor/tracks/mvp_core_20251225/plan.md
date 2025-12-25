@@ -4,7 +4,7 @@
 - [x] Task: Initialize Flutter Desktop project for Mac and Windows. [d59edcf]
 - [x] Task: Create `Makefile` with `setup`, `build`, and `test` commands. [b0b2cdf]
 - [x] Task: Configure `analysis_options.yaml` with strict linting rules. [b93aac9]
-- [ ] Task: Implement basic navigation and window setup.
+- [x] Task: Implement basic navigation and window setup. [f1a42eb]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Scaffolding' (Protocol in workflow.md)
 
 ## Phase 2: Local Storage & Native Integration
