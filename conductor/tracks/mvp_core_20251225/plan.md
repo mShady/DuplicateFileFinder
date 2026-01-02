@@ -9,7 +9,7 @@
 
 ## Phase 2: Local Storage & Native Integration
 - [x] Task: Set up Drift (SQLite) database schema for file metadata. [2ec89b5]
-- [ ] Task: Implement native platform channel for 'Move to Trash' (macOS/Swift).
+- [x] Task: Implement native platform channel for 'Move to Trash' (macOS/Swift). [1bc0649]
 - [ ] Task: Implement native platform channel for 'Move to Trash' (Windows/C++).
 - [ ] Task: Implement native platform channel for 'Reveal in Finder/Explorer'.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Data & Native' (Protocol in workflow.md)
