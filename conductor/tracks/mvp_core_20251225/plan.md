@@ -1,11 +1,11 @@
 # Plan: MVP - Core Scanning, Visualization, and Safe Deletion
 
-## Phase 1: Project Scaffolding & Automation
+## Phase 1: Project Scaffolding & Automation [checkpoint: ea04eef]
 - [x] Task: Initialize Flutter Desktop project for Mac and Windows. [d59edcf]
 - [x] Task: Create `Makefile` with `setup`, `build`, and `test` commands. [b0b2cdf]
 - [x] Task: Configure `analysis_options.yaml` with strict linting rules. [b93aac9]
 - [x] Task: Implement basic navigation and window setup. [f1a42eb]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Scaffolding' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Scaffolding' (Protocol in workflow.md)
 
 ## Phase 2: Local Storage & Native Integration
 - [ ] Task: Set up Drift (SQLite) database schema for file metadata.
