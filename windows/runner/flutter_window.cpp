@@ -3,6 +3,10 @@
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+#include <flutter/method_channel.h>
+#include <flutter/standard_method_codec.h>
+#include <windows.h>
+#include <shlobj.h>
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -25,6 +29,53 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+  
+  // Custom Method Channel for Native Actions
+  flutter::MethodChannel<> channel(
+      flutter_controller_->engine()->messenger(), "com.example.duplicateFileFinder/native",
+      &flutter::StandardMethodCodec::GetInstance());
+
+  channel.SetMethodCallHandler(
+      [](const flutter::MethodCall<>& call,
+         std::unique_ptr<flutter::MethodResult<>> result) {
+        if (call.method_name() == "moveToTrash") {
+            const auto* arguments = std::get_if<std::string>(call.arguments());
+            if (!arguments) {
+                result->Error("INVALID_ARGUMENT", "Argument must be a string path");
+                return;
+            }
+            std::string path = *arguments;
+
+            // Convert UTF-8 path to Wide String
+            int count = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), NULL, 0);
+            if (count == 0) {
+                 result->Error("TRASH_ERROR", "Failed to convert path to wide string");
+                 return;
+            }
+            std::wstring wpath(count, 0);
+            MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), &wpath[0], count);
+            wpath.append(1, L'\0'); // Double null termination
+
+            SHFILEOPSTRUCTW fileOp = {0};
+            fileOp.wFunc = FO_DELETE;
+            fileOp.pFrom = wpath.c_str();
+            fileOp.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
+
+            int ret = SHFileOperationW(&fileOp);
+            if (ret == 0) {
+                if (fileOp.fAnyOperationsAborted) {
+                    result->Success(false);
+                } else {
+                    result->Success(true);
+                }
+            } else {
+                result->Error("TRASH_ERROR", "Failed to move file to trash", std::to_string(ret));
+            }
+        } else {
+            result->NotImplemented();
+        }
+      });
+
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
