@@ -23,4 +23,20 @@ void main() {
     expect(log.single.method, 'moveToTrash');
     expect(log.single.arguments, '/tmp/test.txt');
   });
+
+  test('revealInFinder invokes correct platform method', () async {
+    final List<MethodCall> log = <MethodCall>[];
+    
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+      log.add(methodCall);
+      return true;
+    });
+
+    await nativeActions.revealInFinder('/tmp/test.txt');
+
+    expect(log, hasLength(1));
+    expect(log.single.method, 'revealInFinder');
+    expect(log.single.arguments, '/tmp/test.txt');
+  });
 }

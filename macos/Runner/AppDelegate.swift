@@ -16,6 +16,14 @@ class AppDelegate: FlutterAppDelegate {
                 return
             }
             self.moveToTrash(filePath: filePath, result: result)
+        } else if call.method == "revealInFinder" {
+            guard let filePath = call.arguments as? String else {
+                result(FlutterError(code: "INVALID_ARGUMENT", message: "File path must be a string", details: nil))
+                return
+            }
+            let fileURL = URL(fileURLWithPath: filePath)
+            NSWorkspace.shared.activateFileViewerSelecting([fileURL])
+            result(true)
         } else {
             result(FlutterMethodNotImplemented)
         }

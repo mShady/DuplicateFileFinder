@@ -11,4 +11,13 @@ class NativeActions {
       return false;
     }
   }
+
+  Future<bool> revealInFinder(String filePath) async {
+    try {
+      final bool? result = await _channel.invokeMethod<bool>('revealInFinder', filePath);
+      return result ?? false;
+    } on PlatformException catch (_) {
+      return false;
+    }
+  }
 }

@@ -71,6 +71,32 @@ bool FlutterWindow::OnCreate() {
             } else {
                 result->Error("TRASH_ERROR", "Failed to move file to trash", std::to_string(ret));
             }
+        } else if (call.method_name() == "revealInFinder") {
+            const auto* arguments = std::get_if<std::string>(call.arguments());
+            if (!arguments) {
+                result->Error("INVALID_ARGUMENT", "Argument must be a string path");
+                return;
+            }
+            std::string path = *arguments;
+
+            int count = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), NULL, 0);
+            if (count == 0) {
+                 result->Error("REVEAL_ERROR", "Failed to convert path to wide string");
+                 return;
+            }
+            std::wstring wpath(count, 0);
+            MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), &wpath[0], count);
+
+            std::wstring params = L"/select,\"";
+            params += wpath;
+            params += L"\"";
+
+            HINSTANCE hInst = ShellExecuteW(NULL, L"open", L"explorer.exe", params.c_str(), NULL, SW_SHOWDEFAULT);
+            if ((intptr_t)hInst > 32) {
+                result->Success(true);
+            } else {
+                result->Error("REVEAL_ERROR", "Failed to reveal file in explorer", std::to_string((intptr_t)hInst));
+            }
         } else {
             result->NotImplemented();
         }
