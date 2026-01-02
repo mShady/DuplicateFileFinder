@@ -11,7 +11,7 @@
 - [x] Task: Set up Drift (SQLite) database schema for file metadata. [2ec89b5]
 - [x] Task: Implement native platform channel for 'Move to Trash' (macOS/Swift). [1bc0649]
 - [x] Task: Implement native platform channel for 'Move to Trash' (Windows/C++). [a580367]
-- [ ] Task: Implement native platform channel for 'Reveal in Finder/Explorer'.
+- [x] Task: Implement native platform channel for 'Reveal in Finder/Explorer'. [f9ab58c]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Data & Native' (Protocol in workflow.md)
 
 ## Phase 3: Optimized Scanning Engine
