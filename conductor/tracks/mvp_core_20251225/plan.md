@@ -8,7 +8,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Scaffolding' (Protocol in workflow.md)
 
 ## Phase 2: Local Storage & Native Integration
-- [ ] Task: Set up Drift (SQLite) database schema for file metadata.
+- [x] Task: Set up Drift (SQLite) database schema for file metadata. [2ec89b5]
 - [ ] Task: Implement native platform channel for 'Move to Trash' (macOS/Swift).
 - [ ] Task: Implement native platform channel for 'Move to Trash' (Windows/C++).
 - [ ] Task: Implement native platform channel for 'Reveal in Finder/Explorer'.
