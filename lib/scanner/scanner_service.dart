@@ -40,7 +40,7 @@ class FileItem extends ScanEvent {
 class ScannerService {
   static const int progressInterval = 10;
 
-  Future<Stream<ScanEvent>> scan(String directoryPath) async {
+  Future<Stream<ScanEvent>> scan(String directoryPath, {int maxStage = 2}) async {
     final receivePort = ReceivePort();
     final isolate = await Isolate.spawn(_isolateEntryPoint, receivePort.sendPort);
     
@@ -57,7 +57,7 @@ class ScannerService {
     
     // Create a new ReceivePort for results
     final resultPort = ReceivePort();
-    isolateSendPort.send(_ScanRequest(directoryPath, resultPort.sendPort));
+    isolateSendPort.send(_ScanRequest(directoryPath, resultPort.sendPort, maxStage));
     
     resultPort.listen(
       (message) {
@@ -127,9 +127,21 @@ class ScannerService {
         ));
 
         // Stage 1: Filter by size
+        // If maxStage is 0 (walking only) we'd stop here? But usually we want duplicates.
+        // Let's assume maxStage 1 means "Filter by Size" and return results.
+        
         int hashedCount = 0;
         for (final entry in filesBySize.entries) {
           if (entry.value.length > 1) {
+            
+            if (message.maxStage < 2) {
+              // Just return size duplicates if limited to Stage 1
+              for (final item in entry.value) {
+                message.replyPort.send(item);
+              }
+              continue;
+            }
+
             // Stage 2: Filter by partial hash
             final Map<String, List<FileItem>> filesByPartialHash = {};
 
@@ -164,12 +176,14 @@ class ScannerService {
           }
         }
 
-        // Send final progress for hashing phase
-        message.replyPort.send(ScanProgress(
-           scannedCount: hashedCount,
-           currentFile: "",
-           phase: ScanPhase.hashing,
-        ));
+        // Send final progress for hashing phase only if we did it
+        if (message.maxStage >= 2) {
+          message.replyPort.send(ScanProgress(
+             scannedCount: hashedCount,
+             currentFile: "",
+             phase: ScanPhase.hashing,
+          ));
+        }
 
         message.replyPort.send(_ScanComplete());
       }
@@ -180,7 +194,8 @@ class ScannerService {
 class _ScanRequest {
   final String path;
   final SendPort replyPort;
-  _ScanRequest(this.path, this.replyPort);
+  final int maxStage;
+  _ScanRequest(this.path, this.replyPort, this.maxStage);
 }
 
 class _ScanComplete {}
