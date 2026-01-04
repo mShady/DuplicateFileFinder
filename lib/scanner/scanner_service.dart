@@ -6,10 +6,27 @@ import 'package:duplicate_file_finder/utils/file_utils.dart';
 
 abstract class ScanEvent {}
 
+enum ScanPhase {
+  walking,
+  hashing,
+}
+
 class ScanProgress extends ScanEvent {
   final int scannedCount;
   final String currentFile;
-  ScanProgress({required this.scannedCount, required this.currentFile});
+  final ScanPhase phase;
+  
+  ScanProgress({
+    required this.scannedCount,
+    required this.currentFile,
+    required this.phase,
+  });
+}
+
+class ScanError extends ScanEvent {
+  final String message;
+  final String? path;
+  ScanError({required this.message, this.path});
 }
 
 class FileItem extends ScanEvent {
@@ -80,6 +97,7 @@ class ScannerService {
              message.replyPort.send(ScanProgress(
                scannedCount: scannedCount,
                currentFile: file.path,
+               phase: ScanPhase.walking,
              ));
            }
 
@@ -96,10 +114,11 @@ class ScannerService {
            }
         }
         
-        // Send final progress
+        // Send final progress for walking phase
         message.replyPort.send(ScanProgress(
            scannedCount: scannedCount,
-           currentFile: "Scanning complete",
+           currentFile: "",
+           phase: ScanPhase.walking,
         ));
 
         // Stage 1: Filter by size

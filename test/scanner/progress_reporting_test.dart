@@ -29,6 +29,7 @@ void main() {
     int lastCount = -1;
     for (final p in progressEvents) {
       expect(p.scannedCount, greaterThanOrEqualTo(lastCount));
+      expect(p.phase, equals(ScanPhase.walking));
       lastCount = p.scannedCount;
     }
     
