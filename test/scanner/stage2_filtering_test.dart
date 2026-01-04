@@ -39,7 +39,8 @@ void main() {
     
     final service = ScannerService();
     final stream = await service.scan(tempDir.path);
-    final files = await stream.toList();
+    final events = await stream.toList();
+    final files = events.whereType<FileItem>().toList();
     
     final paths = files.map((f) => f.path).toList();
     

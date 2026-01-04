@@ -4,12 +4,28 @@ import 'dart:isolate';
 import 'package:duplicate_file_finder/scanner/file_walker.dart';
 import 'package:duplicate_file_finder/utils/file_utils.dart';
 
+abstract class ScanEvent {}
+
+class ScanProgress extends ScanEvent {
+  final int scannedCount;
+  final String currentFile;
+  ScanProgress({required this.scannedCount, required this.currentFile});
+}
+
+class FileItem extends ScanEvent {
+  final String path;
+  final int size;
+  final DateTime modified;
+
+  FileItem({required this.path, required this.size, required this.modified});
+}
+
 class ScannerService {
-  Future<Stream<FileItem>> scan(String directoryPath) async {
+  Future<Stream<ScanEvent>> scan(String directoryPath) async {
     final receivePort = ReceivePort();
     await Isolate.spawn(_isolateEntryPoint, receivePort.sendPort);
     
-    final streamController = StreamController<FileItem>();
+    final streamController = StreamController<ScanEvent>();
     
     // Wait for the isolate to send its SendPort
     final isolateSendPort = await receivePort.first as SendPort;
@@ -23,7 +39,7 @@ class ScannerService {
         streamController.close();
         resultPort.close();
         receivePort.close();
-      } else if (message is FileItem) {
+      } else if (message is ScanEvent) {
         streamController.add(message);
       }
     });
@@ -39,8 +55,18 @@ class ScannerService {
       if (message is _ScanRequest) {
         final walker = FileWalker();
         final Map<int, List<FileItem>> filesBySize = {};
+        int scannedCount = 0;
 
         await for (final file in walker.walk(message.path)) {
+           scannedCount++;
+           // Emit progress every 10 files or for the first one
+           if (scannedCount == 1 || scannedCount % 10 == 0) {
+             message.replyPort.send(ScanProgress(
+               scannedCount: scannedCount,
+               currentFile: file.path,
+             ));
+           }
+
            try {
              final stat = await file.stat();
              final item = FileItem(
@@ -53,6 +79,12 @@ class ScannerService {
              // Ignore access errors
            }
         }
+        
+        // Send final progress
+        message.replyPort.send(ScanProgress(
+           scannedCount: scannedCount,
+           currentFile: "Scanning complete",
+        ));
 
         // Stage 1: Filter by size
         for (final entry in filesBySize.entries) {
@@ -83,14 +115,6 @@ class ScannerService {
       }
     });
   }
-}
-
-class FileItem {
-  final String path;
-  final int size;
-  final DateTime modified;
-
-  FileItem({required this.path, required this.size, required this.modified});
 }
 
 class _ScanRequest {

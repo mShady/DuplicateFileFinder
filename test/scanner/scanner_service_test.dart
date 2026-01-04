@@ -12,7 +12,8 @@ void main() {
 
     final service = ScannerService();
     final stream = await service.scan(tempDir.path);
-    final files = await stream.toList();
+    final events = await stream.toList();
+    final files = events.whereType<FileItem>().toList();
 
     expect(files.length, 2);
     expect(files.any((f) => f.path.endsWith('a.txt')), isTrue);

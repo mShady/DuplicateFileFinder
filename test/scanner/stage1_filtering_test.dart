@@ -17,7 +17,8 @@ void main() {
     
     final service = ScannerService();
     final stream = await service.scan(tempDir.path);
-    final files = await stream.toList();
+    final events = await stream.toList();
+    final files = events.whereType<FileItem>().toList();
     
     // Expect A and C to be present, B to be absent
     final paths = files.map((f) => f.path).toList();
