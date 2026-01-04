@@ -65,4 +65,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # Conductor local state
-conductor/setup_state.json\n# Test coverage\ncoverage/
+conductor/setup_state.json
+
+# Flutter-related\n# Test coverage\ncoverage/
