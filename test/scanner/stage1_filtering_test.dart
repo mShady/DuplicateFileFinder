@@ -13,10 +13,11 @@ void main() {
     
     fileA.writeAsStringSync('12345'); // Size 5
     fileB.writeAsStringSync('1234567890'); // Size 10
-    fileC.writeAsStringSync('12345'); // Size 5 (same as A, same content)
+    fileC.writeAsStringSync('abcde'); // Size 5 (same as A, diff content)
     
     final service = ScannerService();
-    final stream = await service.scan(tempDir.path);
+    // Stop at Stage 1 (Size), so A and C should be returned despite different content
+    final stream = await service.scan(tempDir.path, maxStage: 1);
     final events = await stream.toList();
     final files = events.whereType<FileItem>().toList();
     
