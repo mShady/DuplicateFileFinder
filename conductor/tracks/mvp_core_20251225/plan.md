@@ -19,7 +19,7 @@
 - [x] Task: Implement Stage 1: Size-based grouping and filtering. [76bd55e]
 - [x] Task: Implement Stage 2: 4KB Partial Hashing logic in Isolate. [db65732]
 - [x] Task: Implement file hashing logic (SHA-256) in Dart. [63d5159]
-- [ ] Task: Implement scanning progress reporting to the UI.
+- [x] Task: Implement scanning progress reporting to the UI. [b6e6ace]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Scanner' (Protocol in workflow.md)
 
 ## Phase 4: Results UI & Selection Logic
