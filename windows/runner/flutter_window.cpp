@@ -87,15 +87,17 @@ bool FlutterWindow::OnCreate() {
             std::wstring wpath(count, 0);
             MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), &wpath[0], count);
 
-            std::wstring params = L"/select,\"";
-            params += wpath;
-            params += L"\"";
-
-            HINSTANCE hInst = ShellExecuteW(NULL, L"open", L"explorer.exe", params.c_str(), NULL, SW_SHOWDEFAULT);
-            if ((intptr_t)hInst > 32) {
-                result->Success(true);
+            PIDLIST_ABSOLUTE pidl = ILCreateFromPathW(wpath.c_str());
+            if (pidl) {
+                HRESULT hr = SHOpenFolderAndSelectItems(pidl, 0, NULL, 0);
+                ILFree(pidl);
+                if (SUCCEEDED(hr)) {
+                    result->Success(true);
+                } else {
+                    result->Error("REVEAL_ERROR", "Failed to reveal file in explorer", std::to_string(hr));
+                }
             } else {
-                result->Error("REVEAL_ERROR", "Failed to reveal file in explorer", std::to_string((intptr_t)hInst));
+                result->Error("NOT_FOUND", "File not found or invalid path");
             }
         } else {
             result->NotImplemented();

@@ -22,8 +22,12 @@ class AppDelegate: FlutterAppDelegate {
                 return
             }
             let fileURL = URL(fileURLWithPath: filePath)
-            NSWorkspace.shared.activateFileViewerSelecting([fileURL])
-            result(true)
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                NSWorkspace.shared.activateFileViewerSelecting([fileURL])
+                result(true)
+            } else {
+                result(FlutterError(code: "NOT_FOUND", message: "File not found at path: \(filePath)", details: nil))
+            }
         } else {
             result(FlutterMethodNotImplemented)
         }
