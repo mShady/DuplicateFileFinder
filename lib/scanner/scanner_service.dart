@@ -36,18 +36,31 @@ class ScannerService {
     receivePort.listen((message) async {
       if (message is _ScanRequest) {
         final walker = FileWalker();
+        final Map<int, List<FileItem>> filesBySize = {};
+
         await for (final file in walker.walk(message.path)) {
            try {
              final stat = await file.stat();
-             message.replyPort.send(FileItem(
+             final item = FileItem(
                path: file.path,
                size: stat.size,
                modified: stat.modified,
-             ));
+             );
+             filesBySize.putIfAbsent(item.size, () => []).add(item);
            } catch (e) {
              // Ignore access errors
            }
         }
+
+        // Stage 1: Filter by size
+        for (final entry in filesBySize.entries) {
+          if (entry.value.length > 1) {
+            for (final item in entry.value) {
+              message.replyPort.send(item);
+            }
+          }
+        }
+
         message.replyPort.send(_ScanComplete());
       }
     });

@@ -7,13 +7,15 @@ void main() {
     final tempDir = Directory.systemTemp.createTempSync();
     File('${tempDir.path}/a.txt').createSync();
     await File('${tempDir.path}/a.txt').writeAsString('content');
+    File('${tempDir.path}/copy.txt').createSync();
+    await File('${tempDir.path}/copy.txt').writeAsString('content');
 
     final service = ScannerService();
     final stream = await service.scan(tempDir.path);
     final files = await stream.toList();
 
-    expect(files.length, 1);
-    expect(files.first.path, endsWith('a.txt'));
+    expect(files.length, 2);
+    expect(files.any((f) => f.path.endsWith('a.txt')), isTrue);
     expect(files.first.size, greaterThan(0));
 
     await tempDir.delete(recursive: true);
