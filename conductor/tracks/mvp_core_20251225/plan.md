@@ -15,7 +15,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Data & Native' (Protocol in workflow.md)
 
 ## Phase 3: Optimized Scanning Engine
-- [ ] Task: Implement File System Walker in a Dart Isolate.
+- [x] Task: Implement File System Walker in a Dart Isolate. [67dd5ab]
 - [ ] Task: Implement Stage 1: Size-based grouping and filtering.
 - [ ] Task: Implement Stage 2: 4KB Partial Hashing logic in Isolate.
 - [x] Task: Implement file hashing logic (SHA-256) in Dart. [63d5159]
