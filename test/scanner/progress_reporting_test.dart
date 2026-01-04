@@ -25,15 +25,27 @@ void main() {
     
     expect(progressEvents.isNotEmpty, isTrue);
     
-    // Verify count increases
+    // Verify walking phase
+    final walkingEvents = progressEvents.where((e) => e.phase == ScanPhase.walking).toList();
+    expect(walkingEvents.isNotEmpty, isTrue);
+    
     int lastCount = -1;
-    for (final p in progressEvents) {
+    for (final p in walkingEvents) {
       expect(p.scannedCount, greaterThanOrEqualTo(lastCount));
-      expect(p.phase, equals(ScanPhase.walking));
       lastCount = p.scannedCount;
     }
-    
-    expect(lastCount, equals(50)); // Should report total at end? Or close to it.
+    expect(lastCount, equals(50));
+
+    // Verify hashing phase (all files have same size 0, so all go to stage 2)
+    final hashingEvents = progressEvents.where((e) => e.phase == ScanPhase.hashing).toList();
+    expect(hashingEvents.isNotEmpty, isTrue);
+
+    lastCount = -1;
+    for (final p in hashingEvents) {
+      expect(p.scannedCount, greaterThanOrEqualTo(lastCount));
+      lastCount = p.scannedCount;
+    }
+    expect(lastCount, equals(50));
 
     await tempDir.delete(recursive: true);
   });

@@ -38,6 +38,8 @@ class FileItem extends ScanEvent {
 }
 
 class ScannerService {
+  static const int progressInterval = 10;
+
   Future<Stream<ScanEvent>> scan(String directoryPath) async {
     final receivePort = ReceivePort();
     final isolate = await Isolate.spawn(_isolateEntryPoint, receivePort.sendPort);
@@ -92,8 +94,8 @@ class ScannerService {
 
         await for (final file in walker.walk(message.path)) {
            scannedCount++;
-           // Emit progress every 10 files or for the first one
-           if (scannedCount == 1 || scannedCount % 10 == 0) {
+           // Emit progress every N files or for the first one
+           if (scannedCount == 1 || scannedCount % ScannerService.progressInterval == 0) {
              message.replyPort.send(ScanProgress(
                scannedCount: scannedCount,
                currentFile: file.path,
@@ -110,7 +112,10 @@ class ScannerService {
              );
              filesBySize.putIfAbsent(item.size, () => []).add(item);
            } catch (e) {
-             // Ignore access errors
+             message.replyPort.send(ScanError(
+               message: "Failed to stat file",
+               path: file.path,
+             ));
            }
         }
         
@@ -122,17 +127,30 @@ class ScannerService {
         ));
 
         // Stage 1: Filter by size
+        int hashedCount = 0;
         for (final entry in filesBySize.entries) {
           if (entry.value.length > 1) {
             // Stage 2: Filter by partial hash
             final Map<String, List<FileItem>> filesByPartialHash = {};
 
             for (final item in entry.value) {
+              hashedCount++;
+              if (hashedCount == 1 || hashedCount % ScannerService.progressInterval == 0) {
+                 message.replyPort.send(ScanProgress(
+                   scannedCount: hashedCount,
+                   currentFile: item.path,
+                   phase: ScanPhase.hashing,
+                 ));
+              }
+
               try {
                 final hash = await FileUtils.calculatePartialHash(File(item.path));
                 filesByPartialHash.putIfAbsent(hash, () => []).add(item);
               } catch (e) {
-                // Ignore hash errors
+                message.replyPort.send(ScanError(
+                  message: "Failed to calculate partial hash",
+                  path: item.path,
+                ));
               }
             }
 
@@ -145,6 +163,13 @@ class ScannerService {
             }
           }
         }
+
+        // Send final progress for hashing phase
+        message.replyPort.send(ScanProgress(
+           scannedCount: hashedCount,
+           currentFile: "",
+           phase: ScanPhase.hashing,
+        ));
 
         message.replyPort.send(_ScanComplete());
       }
