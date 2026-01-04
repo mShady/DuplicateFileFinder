@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
 import 'package:duplicate_file_finder/scanner/file_walker.dart';
+import 'package:duplicate_file_finder/utils/file_utils.dart';
 
 class ScannerService {
   Future<Stream<FileItem>> scan(String directoryPath) async {
@@ -55,8 +57,24 @@ class ScannerService {
         // Stage 1: Filter by size
         for (final entry in filesBySize.entries) {
           if (entry.value.length > 1) {
+            // Stage 2: Filter by partial hash
+            final Map<String, List<FileItem>> filesByPartialHash = {};
+
             for (final item in entry.value) {
-              message.replyPort.send(item);
+              try {
+                final hash = await FileUtils.calculatePartialHash(File(item.path));
+                filesByPartialHash.putIfAbsent(hash, () => []).add(item);
+              } catch (e) {
+                // Ignore hash errors
+              }
+            }
+
+            for (final hashEntry in filesByPartialHash.entries) {
+              if (hashEntry.value.length > 1) {
+                for (final item in hashEntry.value) {
+                  message.replyPort.send(item);
+                }
+              }
             }
           }
         }

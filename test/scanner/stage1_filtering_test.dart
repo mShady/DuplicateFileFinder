@@ -13,7 +13,7 @@ void main() {
     
     fileA.writeAsStringSync('12345'); // Size 5
     fileB.writeAsStringSync('1234567890'); // Size 10
-    fileC.writeAsStringSync('abcde'); // Size 5 (same as A)
+    fileC.writeAsStringSync('12345'); // Size 5 (same as A, same content)
     
     final service = ScannerService();
     final stream = await service.scan(tempDir.path);
