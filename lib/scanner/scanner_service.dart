@@ -23,9 +23,15 @@ class FileItem extends ScanEvent {
 class ScannerService {
   Future<Stream<ScanEvent>> scan(String directoryPath) async {
     final receivePort = ReceivePort();
-    await Isolate.spawn(_isolateEntryPoint, receivePort.sendPort);
+    final isolate = await Isolate.spawn(_isolateEntryPoint, receivePort.sendPort);
     
     final streamController = StreamController<ScanEvent>();
+    
+    // Ensure isolate is killed if the stream is cancelled by UI
+    streamController.onCancel = () {
+      isolate.kill(priority: Isolate.immediate);
+      receivePort.close();
+    };
     
     // Wait for the isolate to send its SendPort
     final isolateSendPort = await receivePort.first as SendPort;
@@ -34,15 +40,25 @@ class ScannerService {
     final resultPort = ReceivePort();
     isolateSendPort.send(_ScanRequest(directoryPath, resultPort.sendPort));
     
-    resultPort.listen((message) {
-      if (message is _ScanComplete) {
-        streamController.close();
-        resultPort.close();
-        receivePort.close();
-      } else if (message is ScanEvent) {
-        streamController.add(message);
-      }
-    });
+    resultPort.listen(
+      (message) {
+        if (message is _ScanComplete) {
+          streamController.close();
+          resultPort.close();
+          receivePort.close();
+        } else if (message is ScanEvent) {
+          streamController.add(message);
+        }
+      },
+      onError: (error) {
+        streamController.addError(error);
+      },
+      onDone: () {
+        if (!streamController.isClosed) {
+          streamController.close();
+        }
+      },
+    );
     
     return streamController.stream;
   }
