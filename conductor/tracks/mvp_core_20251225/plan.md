@@ -28,3 +28,7 @@
 - [ ] Task: Build the Double Confirmation dialog for batch deletion.
 - [ ] Task: Connect UI actions to Scanning Engine and Native Trash logic.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: UI & Deletion' (Protocol in workflow.md)
+
+## Phase 5: Performance & Robustness Improvements
+- [ ] Task: Optimize Scanner memory usage (replace O(N) map with streaming/external sort).
+- [ ] Task: Formalize Isolate message types and protocols.
