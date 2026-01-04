@@ -67,4 +67,7 @@ $RECYCLE.BIN/
 # Conductor local state
 conductor/setup_state.json
 
-# Flutter-related\n# Test coverage\ncoverage/
+# Flutter-related
+
+# Test coverage
+coverage/
